@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   UseFilters,
   UsePipes,
@@ -19,5 +20,10 @@ export class ClientsController {
   @UseFilters(new GenericExceptionFilter())
   createClient(@Body() body: CreateClientInputDto) {
     return this.clientsService.createClient(body);
+  }
+
+  @Get()
+  sayHello(){
+    return "Hello from clients..."
   }
 }
