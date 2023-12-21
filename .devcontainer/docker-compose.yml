@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspaces:cached
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+    networks:
+      - mongodb_cluster_network
+
+    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
+    # network_mode: service:db
+
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+  mongodb_1:
+    container_name: mongodb_cont_1
+    image: mongo:4.0.4
+    expose:
+      - 27017
+    ports:
+      - "30010:27017"
+    restart: unless-stopped
+    networks:
+      - mongodb_cluster_network
+    volumes:
+      - mongodb_1_data:/data/db
+    command: --replSet my_mongodb_replset
+
+  mongodb_2:
+    container_name: mongodb_cont_2
+    image: mongo:4.0.4
+    expose:
+      - 27017
+    ports:
+      - "30011:27017"
+    restart: unless-stopped
+    networks:
+      - mongodb_cluster_network
+    volumes:
+      - mongodb_2_data:/data/db
+    command: --replSet my_mongodb_replset
+
+  mongodb_3:
+    container_name: mongodb_cont_3
+    image: mongo:4.0.4
+    expose:
+      - 27017
+    ports:
+      - "30012:27017"
+    restart: unless-stopped
+    networks:
+      - mongodb_cluster_network
+    volumes:
+      - mongodb_3_data:/data/db
+    command: --replSet my_mongodb_replset
+
+    # Uncomment to change startup options
+    # environment:
+    #  MONGO_INITDB_ROOT_USERNAME: root
+    #  MONGO_INITDB_ROOT_PASSWORD: example
+    #  MONGO_INITDB_DATABASE: your-database-here
+
+    # Add "forwardPorts": ["27017"] to **devcontainer.json** to forward MongoDB locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+volumes:
+  mongodb_1_data:
+  mongodb_2_data:
+  mongodb_3_data:
+
+networks:
+  mongodb_cluster_network:
+
+# mongosh --host mongodb_cont_1:27017 to connect to first mongodb node
+# rs.initiate({ "_id" : "my_mongodb_replset", "members" : [ { "_id" : 0, "host" : "mongodb_cont_1:27017" }, { "_id" : 1, "host" : "mongodb_cont_2:27017" }, { "_id" : 2, "host" : "mongodb_cont_3:27017" } ] })
+# now wait  for the system to choose primary
