@@ -46,3 +46,5 @@ export const CLIENTS_CONSTANTS = {
 
 export const IS_PUBLIC_KEY = "isPublic";
 export const AllowWithoutAuth = () => SetMetadata(IS_PUBLIC_KEY, true);
+
+export const SWAGGER_API_ENDPOINT = "api-docs";

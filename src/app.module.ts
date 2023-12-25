@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { ClientsModule } from "./clients/clients.module";
-import { AuthModule } from "./auth/auth.module";
+import { ClientsModule } from "./api/clients/clients.module";
+import { AuthModule } from "./api/auth/auth.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { configuration } from "./config/configuration";
 import { configValidation } from "./config/validation";
