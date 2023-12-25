@@ -18,7 +18,7 @@ import { InjectConnection } from "@nestjs/mongoose";
 import * as mongoose from "mongoose";
 import * as K from "src/shared/consts";
 import { configuration } from "src/config/configuration";
-import { ConfigService, ConfigType } from "@nestjs/config";
+import { ConfigType } from "@nestjs/config";
 
 @Injectable()
 export class ClientsService {
