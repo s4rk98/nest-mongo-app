@@ -19,6 +19,15 @@ import * as mongoose from "mongoose";
 import * as K from "src/shared/consts";
 import { configuration } from "src/config/configuration";
 import { ConfigType } from "@nestjs/config";
+import {
+  GetClientByWildCardSearchOutputClass,
+  GetClientByWildCardSearchOutputDataDto,
+  GetClientByWildCardSearchQueryInputDto,
+  GetClientOutputClass,
+  GetClientParamDataDto,
+  GetClientParamDto,
+} from "./dtos";
+import { SchemaTypes, Types, Document } from "mongoose";
 
 @Injectable()
 export class ClientsService {
@@ -81,5 +90,45 @@ export class ClientsService {
       return user._id;
     }
     return null;
+  }
+
+  async getClient(params: GetClientParamDto) {
+    const [userDetails] = await this.clientModal.aggregate([
+      { $match: { _id: new Types.ObjectId(params.client_id) } },
+      { $project: { _id: 0, id: "$_id", userName: 1, createAt: 1 } },
+    ]);
+    return new GetClientOutputClass(userDetails);
+  }
+
+  async getClientByWildCardSearch(
+    query: GetClientByWildCardSearchQueryInputDto,
+  ) {
+    const regexp = new RegExp(`^${query.userNameKeyword.trim()}`, "gi");
+    const [result] = await this.clientModal.aggregate([
+      {
+        $match: {
+          userName: { $regex: regexp },
+        },
+      },
+      { $sort: { userName: 1, createAt: 1 } },
+      { $project: { _id: 0, id: "$_id", userName: 1, createAt: 1 } },
+      {
+        $facet: {
+          clientList: [
+            { $match: {} },
+            { $skip: query.offset },
+            { $limit: query.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
+    const clientList = result.clientList;
+    const totalCount = result.totalCount[0]?.count || 0;
+    const data: GetClientByWildCardSearchOutputDataDto = {
+      clientList: clientList,
+      totalCount,
+    };
+    return new GetClientByWildCardSearchOutputClass(data);
   }
 }
