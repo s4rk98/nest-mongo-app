@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsString } from 'class-validator';
-import { GenericResponseClass } from 'src/shared/classes/generic-classes';
+import { IsNotEmpty, IsString } from "class-validator";
+import { GenericResponseClass } from "src/shared/classes/generic-classes";
 
 export class CreateClientInputDto {
   @IsString()
@@ -17,7 +17,7 @@ export class CreateClientsOutputDataDto {
 }
 
 export class CreateClientResponseClass extends GenericResponseClass<CreateClientsOutputDataDto> {
-  constructor(public data: CreateClientsOutputDataDto[]) {
+  constructor(public data: CreateClientsOutputDataDto) {
     super(data);
   }
 }
