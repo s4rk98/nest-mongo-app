@@ -3,6 +3,7 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
+  Logger,
 } from '@nestjs/common';
 import * as K from 'src/shared/consts';
 import { Response } from 'express';
@@ -10,6 +11,8 @@ import * as CL from 'src/shared/classes';
 
 @Catch()
 export class GenericExceptionFilter implements ExceptionFilter {
+  private logger = new Logger(GenericExceptionFilter.name);
+
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const resp = ctx.getResponse<Response>();
@@ -42,7 +45,7 @@ export class GenericExceptionFilter implements ExceptionFilter {
         K.API_CONSTANTS.EXCEPTION_CODES.INTERNAL_ERROR.message,
       );
     }
-    console.log(logData);
+    this.logger.error(JSON.stringify(logData));
     resp.status(status).json(jsonResp);
   }
 }

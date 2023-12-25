@@ -4,18 +4,22 @@ import {
   Get,
   Post,
   UseFilters,
+  UseGuards,
   UsePipes,
   ValidationPipe,
-} from '@nestjs/common';
-import { ClientsService } from './clients.service';
-import { CreateClientInputDto } from './dtos/create-client.dto';
-import { GenericExceptionFilter } from 'src/filters/generic-filter/generic-filter.filter';
+} from "@nestjs/common";
+import { ClientsService } from "./clients.service";
+import { GenericExceptionFilter } from "src/filters/generic-filter/generic-filter.filter";
+import { CreateClientInputDto } from "./dtos";
+import { AuthGuard } from "src/auth/auth.guard";
+import { AllowWithoutAuth } from "src/shared/consts/api-constants";
 
-@Controller({ path: 'clients' })
+@Controller({ path: "clients" })
 export class ClientsController {
   constructor(private clientsService: ClientsService) {}
 
   @Post()
+  @AllowWithoutAuth()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   @UseFilters(new GenericExceptionFilter())
   createClient(@Body() body: CreateClientInputDto) {
@@ -23,7 +27,7 @@ export class ClientsController {
   }
 
   @Get()
-  sayHello(){
-    return "Hello from clients..."
+  sayHello() {
+    return process.env;
   }
 }
